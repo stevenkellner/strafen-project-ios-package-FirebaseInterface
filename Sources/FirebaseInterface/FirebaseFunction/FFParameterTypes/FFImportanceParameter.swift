@@ -1,0 +1,43 @@
+//
+//  FFImportanceParameter.swift
+//  
+//
+//  Created by Steven on 12.06.22.
+//
+
+import StrafenProjectTypes
+
+/// Importance of a fine.
+internal enum FFImportanceParameter: String {
+    
+    /// Fine has high importance.
+    case high
+    
+    /// Fine has medium importance.
+    case medium
+    
+    /// Fine has low imporance
+    case low
+}
+
+extension FFImportanceParameter: FFParameterType {
+    var parameter: String {
+        return self.rawValue
+    }
+}
+
+extension FFImportanceParameter: Decodable {}
+
+
+extension FFImportanceParameter: IImportance {
+    
+    /// Initializes importance with a `IImportance` protocol.
+    /// - Parameter importance: `IImportance` protocol to initialize the importance.
+    public init(_ importance: some IImportance) {
+        switch importance.concreteImportance {
+        case .high: self = .high
+        case .medium: self = .medium
+        case .low: self = .low
+        }
+    }
+}
