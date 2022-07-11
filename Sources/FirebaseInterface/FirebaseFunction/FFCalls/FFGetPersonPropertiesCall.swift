@@ -8,23 +8,23 @@
 import Foundation
 
 /// Returns club and person properties of user id.
-internal struct FFGetPersonPropertiesCall: FFCallable {
+public struct FFGetPersonPropertiesCall: FFCallable {
     
-    struct ResultType: Decodable {
+    public struct ReturnType: Decodable {
         
         /// Properties of person with specified user id.
-        private let personProperties: FFPersonPropertiesWithIsAdminParameter
+        public private(set) var personProperties: FFPersonPropertiesWithIsAdminParameter
         
         /// Properties of club.
-        private let clubProperties: FFClubPropertiesParameter
+        public private(set) var clubProperties: FFClubPropertiesParameter
     }
     
-    static let functionName: String = "getPersonProperties"
+    public static let functionName: String = "getPersonProperties"
     
     /// User id of person to get properties from.
-    private let userId: String
+    public private(set) var userId: String
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.userId, for: "userId")
     }
 }

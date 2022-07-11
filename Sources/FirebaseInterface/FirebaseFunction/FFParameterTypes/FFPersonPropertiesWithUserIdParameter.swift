@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import StrafenProjectTypes
 
 /// Person properties with id, name, sign in date and user id.
-internal struct FFPersonPropertiesWithUserIdParameter {
+public struct FFPersonPropertiesWithUserIdParameter {
     
     /// Id of the person.
-    public private(set) var id: UUID
+    public private(set) var id: Person.ID
     
     /// Sign in date of the person.
     public private(set) var signInDate: Date
@@ -24,7 +25,7 @@ internal struct FFPersonPropertiesWithUserIdParameter {
 }
 
 extension FFPersonPropertiesWithUserIdParameter: FFParameterType {
-    var parameter: [String: any FFParameterType] {
+    public var parameter: [String: any FFParameterType] {
         return [
             "id": self.id,
             "signInDate": self.signInDate,

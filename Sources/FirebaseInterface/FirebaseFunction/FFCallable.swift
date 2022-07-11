@@ -8,7 +8,7 @@
 import Foundation
 
 /// Protocol that can be used to call a firebase function.
-protocol FFCallable {
+public protocol FFCallable {
     
     /// Type of the call return data.
     associatedtype ReturnType: Decodable
@@ -21,5 +21,5 @@ protocol FFCallable {
 }
 
 extension FFCallable {
-    typealias ReturnType = FFVoidReturnType
+    public typealias ReturnType = FFVoidReturnType
 }

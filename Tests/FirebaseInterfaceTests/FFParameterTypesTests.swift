@@ -6,13 +6,15 @@
 //
 
 import XCTest
+import Crypter
+import StrafenProjectTypes
 @testable import FirebaseInterface
 
 fileprivate func parseType<T>(_ type: T.Type, from json: String) throws -> T where T: Decodable {
     let data = json.data(using: .utf8)
     XCTAssertNotNil(data)
     let decoder = JSONDecoder()
-    decoder.dateDecodingStrategy = .iso8601
+    decoder.dateDecodingStrategy = .iso8601WithMilliseconds
     decoder.dataDecodingStrategy = .base64
     return try decoder.decode(T.self, from: data!)
 }
@@ -90,7 +92,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueValid() throws {
-            let id = UUID()
+            let id = Club.ID(rawValue: UUID())
             let clubProperties = try parseType(FFClubPropertiesParameter.self, from: """
                 {
                     "id": "\(id.uuidString)",
@@ -158,7 +160,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testDeletedFalse() throws {
-            let id = UUID()
+            let id = Club.ID(rawValue: UUID())
             let deletable: FFDeletableParameter<FFClubPropertiesParameter, UUID> = try parseType(FFDeletableParameter<FFClubPropertiesParameter, UUID>.self, from: """
                     {
                         "id": "\(id.uuidString)",
@@ -169,7 +171,7 @@ final class FFParameterTypesTests: XCTestSuite {
                         "inAppPaymentActive": true
                     }
             """)
-            XCTAssertEqual(deletable, FFDeletableParameter<FFClubPropertiesParameter, UUID>.item(FFClubPropertiesParameter(id: id, name: "test name", identifier: "test identifier", regionCode: "test region code", inAppPaymentActive: true)))
+            XCTAssertEqual(deletable, FFDeletableParameter<FFClubPropertiesParameter, UUID>.item(value: FFClubPropertiesParameter(id: id, name: "test name", identifier: "test identifier", regionCode: "test region code", inAppPaymentActive: true)))
             XCTAssertEqual(deletable.internalParameter, [
                 "id": .string(id.uuidString),
                 "name": "test name",
@@ -195,18 +197,18 @@ final class FFParameterTypesTests: XCTestSuite {
                         "deleted": true
                     }
             """)
-            XCTAssertEqual(deletable, FFDeletableParameter<FFAmountParameter, UUID>.deleted(id: id))
+            XCTAssertEqual(deletable, FFDeletableParameter<FFAmountParameter, UUID>.deleted(with: id))
         }
         
         func testDeletedTrue2() throws {
-            let id = UUID()
-            let deletable: FFDeletableParameter<FFClubPropertiesParameter, UUID> = try parseType(FFDeletableParameter<FFClubPropertiesParameter, UUID>.self, from: """
+            let id = Club.ID(rawValue: UUID())
+            let deletable: FFDeletableParameter<FFClubPropertiesParameter, Club.ID> = try parseType(FFDeletableParameter<FFClubPropertiesParameter, Club.ID>.self, from: """
                     {
                         "id": "\(id.uuidString)",
                         "deleted": true
                     }
             """)
-            XCTAssertEqual(deletable, FFDeletableParameter<FFClubPropertiesParameter, UUID>.deleted(id: id))
+            XCTAssertEqual(deletable, FFDeletableParameter<FFClubPropertiesParameter, Club.ID>.deleted(with: id))
             XCTAssertEqual(deletable.internalParameter, [
                 "id": .string(id.uuidString),
                 "deleted": true
@@ -214,8 +216,8 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testItem() throws {
-            let id = UUID()
-            let deletable: FFDeletableParameter<FFClubPropertiesParameter, UUID> = try parseType(FFDeletableParameter<FFClubPropertiesParameter, UUID>.self, from: """
+            let id = Club.ID(rawValue: UUID())
+            let deletable: FFDeletableParameter<FFClubPropertiesParameter, Club.ID> = try parseType(FFDeletableParameter<FFClubPropertiesParameter, Club.ID>.self, from: """
                     {
                         "id": "\(id.uuidString)",
                         "name": "test name",
@@ -224,7 +226,7 @@ final class FFParameterTypesTests: XCTestSuite {
                         "inAppPaymentActive": true
                     }
             """)
-            XCTAssertEqual(deletable, FFDeletableParameter<FFClubPropertiesParameter, UUID>.item(FFClubPropertiesParameter(id: id, name: "test name", identifier: "test identifier", regionCode: "test region code", inAppPaymentActive: true)))
+            XCTAssertEqual(deletable, FFDeletableParameter<FFClubPropertiesParameter, Club.ID>.item(value: FFClubPropertiesParameter(id: id, name: "test name", identifier: "test identifier", regionCode: "test region code", inAppPaymentActive: true)))
             XCTAssertEqual(deletable.internalParameter, [
                 "id": .string(id.uuidString),
                 "name": "test name",
@@ -245,11 +247,9 @@ final class FFParameterTypesTests: XCTestSuite {
         }
                 
         func testValueValid() throws {
-            let id = UUID()
-            let personId = UUID()
-            let updatePersonId = UUID()
-            let reasonTemplateId = UUID()
-            let updateTimestamp = Date()
+            let id = Fine.ID(rawValue: UUID())
+            let personId = Person.ID(rawValue: UUID())
+            let reasonTemplateId = ReasonTemplate.ID(rawValue: UUID())
             let date = Date()
             let fine = try parseType(FFFineParameter.self, from: """
                 {
@@ -257,10 +257,6 @@ final class FFParameterTypesTests: XCTestSuite {
                     "personId": "\(personId.uuidString)",
                     "payedState": {
                         "state": "settled",
-                        "updateProperties": {
-                            "timestamp": "\(updateTimestamp.ISO8601Format(.iso8601))",
-                            "personId": "\(updatePersonId.uuidString)"
-                        }
                     },
                     "number": 1,
                     "date": "\(date.ISO8601Format(.iso8601))",
@@ -269,18 +265,14 @@ final class FFParameterTypesTests: XCTestSuite {
                     }
                 }
             """)
-            XCTAssertEqual(fine, FFFineParameter(id: id, personId: personId, payedState: FFUpdatableParameter(property: .settled, updateProperties: FFUpdatableParameter.UpdateProperties(timestamp: updateTimestamp, personId: updatePersonId)), number: 1, date: date, fineReason: .template(reasonTemplateId: reasonTemplateId)))
+            XCTAssertEqual(fine, FFFineParameter(id: id, personId: personId, payedState: .settled, number: 1, date: date, fineReason: .template(reasonTemplateId: reasonTemplateId)))
             XCTAssertEqual(fine.internalParameter, [
                 "id": .string(id.uuidString),
                 "personId": .string(personId.uuidString),
                 "payedState": [
-                    "state": "settled",
-                    "updateProperties": [
-                        "timestamp": .string(updateTimestamp.ISO8601Format(.iso8601)),
-                        "personId": .string(updatePersonId.uuidString)
-                    ]
+                    "state": "settled"
                 ],
-                "number": 1,
+                "number": .uint(1),
                 "date": .string(date.ISO8601Format(.iso8601)),
                 "fineReason": [
                     "reasonTemplateId": .string(reasonTemplateId.uuidString)
@@ -299,7 +291,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueCustomAndTemplate() throws {
-            let reasonTemplateId = UUID()
+            let reasonTemplateId = ReasonTemplate.ID(rawValue: UUID())
             let fineReason = try parseType(FFFineReasonParameter.self, from: """
                 {
                     "reasonTemplateId": "\(reasonTemplateId.uuidString)",
@@ -315,7 +307,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueTemplate() throws {
-            let reasonTemplateId = UUID()
+            let reasonTemplateId = ReasonTemplate.ID(rawValue: UUID())
             let fineReason = try parseType(FFFineReasonParameter.self, from: """
                 {
                     "reasonTemplateId": "\(reasonTemplateId.uuidString)"
@@ -532,7 +524,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueValid() throws {
-            let id = UUID()
+            let id = Person.ID(rawValue: UUID())
             let person = try parseType(FFPersonParameter.self, from: """
                 {
                     "id": "\(id.uuidString)",
@@ -600,7 +592,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueValid() throws {
-            let id = UUID()
+            let id = Person.ID(rawValue: UUID())
             let signInDate = Date()
             let personProperties = try parseType(FFPersonPropertiesWithIsAdminParameter.self, from: """
                 {
@@ -635,7 +627,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueValid() throws {
-            let id = UUID()
+            let id = Person.ID(rawValue: UUID())
             let signInDate = Date()
             let personProperties = try parseType(FFPersonPropertiesWithUserIdParameter.self, from: """
                 {
@@ -670,7 +662,7 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueValid() throws {
-            let id = UUID()
+            let id = ReasonTemplate.ID(rawValue: UUID())
             let reasonTemplate = try parseType(FFReasonTemplateParameter.self, from: """
                 {
                     "id": "\(id.uuidString)",
@@ -699,8 +691,8 @@ final class FFParameterTypesTests: XCTestSuite {
         }
         
         func testValueValid() throws {
-            let id = UUID()
-            let personId = UUID()
+            let id = Person.ID(rawValue: UUID())
+            let personId = Person.ID(rawValue: UUID())
             let timestamp = Date()
             let updatable = try parseType(FFUpdatableParameter<FFPersonParameter>.self, from: """
                 {

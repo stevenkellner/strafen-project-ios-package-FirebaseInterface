@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import StrafenProjectTypes
 
 /// Contains properties if a fine is payed.
-internal enum FFPayedStateParameter {
+public enum FFPayedStateParameter {
     
     /// Fine is payed.
     case payed(inApp: Bool, payDate: Date)
@@ -21,7 +22,7 @@ internal enum FFPayedStateParameter {
 }
 
 extension FFPayedStateParameter: FFParameterType {
-    var parameter: [String: any FFParameterType] {
+    public var parameter: [String: any FFParameterType] {
         switch self {
         case .payed(let inApp, let payDate):
             return [
@@ -48,7 +49,7 @@ extension FFPayedStateParameter: Decodable {
         case payDate
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         let state = try container.decode(String.self, forKey: .state)
@@ -66,5 +67,32 @@ extension FFPayedStateParameter: Decodable {
             return
         }
         throw DecodingError.dataCorruptedError(forKey: .state, in: container, debugDescription: "Invalid state: \(state)")
+    }
+}
+
+extension FFPayedStateParameter: IPayedState {
+    
+    /// Initializes payed state with a `IPayedState` protocol.
+    /// - Parameter payedState: `IPayedState` protocol to initialize the payed state
+    public init(_ payedState: some IPayedState) {
+        switch payedState.concretePayedState {
+        case .payed(inApp: let inApp, payDate: let payDate):
+            self = .payed(inApp: inApp, payDate: payDate)
+        case .unpayed:
+            self = .unpayed
+        case .settled:
+            self = .settled
+        }
+    }
+    
+    public var concretePayedState: PayedState {
+        switch self {
+        case .payed(inApp: let inApp, payDate: let payDate):
+            return .payed(inApp: inApp, payDate: payDate)
+        case .unpayed:
+            return .unpayed
+        case .settled:
+            return .settled
+        }
     }
 }

@@ -8,6 +8,8 @@
 import Foundation
 
 /// Defines a decodable void return type for firebase function calls.
-internal struct FFVoidReturnType: Decodable {
-    init(from decoder: Decoder) throws {}
+public struct FFVoidReturnType {}
+
+extension FFVoidReturnType: Decodable {
+    public init(from decoder: Decoder) throws {}
 }

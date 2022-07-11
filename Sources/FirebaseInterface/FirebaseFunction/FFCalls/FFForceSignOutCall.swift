@@ -5,20 +5,20 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Force sign out a person.
-internal struct FFForceSignOutCall: FFCallable {
+public struct FFForceSignOutCall: FFCallable {
     
-    static let functionName: String = "forceSignOut"
+    public static let functionName: String = "forceSignOut"
     
     /// Id of the club to force sign out the person.
-    private let clubId: UUID
+    public private(set) var clubId: Club.ID
     
     /// Id of the person to force sign out.
-    private let personId: UUID
+    public private(set) var personId: Person.ID
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.clubId, for: "clubId")
         FFParameter(self.personId, for: "personId")
     }

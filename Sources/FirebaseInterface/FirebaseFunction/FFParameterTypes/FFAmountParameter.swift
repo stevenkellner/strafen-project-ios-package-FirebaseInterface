@@ -8,7 +8,7 @@
 import StrafenProjectTypes
 
 /// Stores an amount value
-internal struct FFAmountParameter {
+public struct FFAmountParameter {
     
     /// Value of the amount
     public private(set) var value: UInt
@@ -18,7 +18,7 @@ internal struct FFAmountParameter {
 }
 
 extension FFAmountParameter: FFParameterType {
-    var parameter: Double {
+    public var parameter: Double {
         return Double(self.value) + Double(self.subUnitValue) / 100
     }
 }
@@ -29,7 +29,7 @@ extension FFAmountParameter: Decodable {
         self.subUnitValue = UInt(value * 100) - self.value * 100
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawAmount = try container.decode(Double.self)
         

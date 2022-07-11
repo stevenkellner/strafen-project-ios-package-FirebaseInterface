@@ -5,23 +5,23 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Changes a element of person list.
-internal struct FFChangePersonCall: FFCallable {
+public struct FFChangePersonCall: FFCallable {
     
-    static let functionName: String = "changePerson"
+    public static let functionName: String = "changePerson"
     
     /// Id of the club to change the person.
-    private let clubId: UUID
+    public private(set) var clubId: Club.ID
     
     /// Type of the change.
-    private let changeType: FFChangeTypeParameter
+    public private(set) var changeType: FFChangeTypeParameter
     
     /// Person to change.
-    private let updatablePerson: FFUpdatableParameter<FFDeletableParameter<FFPersonParameter, UUID>>
+    public private(set) var updatablePerson: FFUpdatableParameter<FFDeletableParameter<FFPersonParameter, Person.ID>>
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.clubId, for: "clubId")
         FFParameter(self.changeType, for: "changeType")
         FFParameter(self.updatablePerson, for: "updatablePerson")

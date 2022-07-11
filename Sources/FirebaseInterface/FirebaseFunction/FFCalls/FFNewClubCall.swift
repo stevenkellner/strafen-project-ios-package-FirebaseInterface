@@ -9,17 +9,17 @@ import Foundation
 
 /// Creates a new club with given properties.
 /// Doesn't update club, if already a club with same club id exists.
-internal struct FFNewClubCall: FFCallable {
+public struct FFNewClubCall: FFCallable {
         
-    static let functionName: String = "newClub"
+    public static let functionName: String = "newClub"
     
     /// Properties of the club to be created.
-    private let clubProperties: FFClubPropertiesParameter
+    public private(set) var clubProperties: FFClubPropertiesParameter
     
     /// Properties of the person creating the club.
-    private let personProperties: FFPersonPropertiesWithUserIdParameter
+    public private(set) var personProperties: FFPersonPropertiesWithUserIdParameter
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.clubProperties, for: "clubProperties")
         FFParameter(self.personProperties, for: "personProperties")
     }

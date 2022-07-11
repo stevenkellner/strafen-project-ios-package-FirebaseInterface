@@ -5,10 +5,10 @@
 //  Created by Steven on 17.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Amount in firebase realtime database.
-internal struct FRDAmount {
+public struct FRDAmount {
     
     /// Value of the amount
     public private(set) var value: UInt
@@ -23,7 +23,7 @@ extension FRDAmount: Decodable {
         self.subUnitValue = UInt(value * 100) - self.value * 100
     }
     
-    init(from decoder: Decoder) throws {
+    public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         let rawAmount = try container.decode(Double.self)
         
@@ -32,5 +32,15 @@ extension FRDAmount: Decodable {
         }
         
         self.init(fromDouble: rawAmount)
+    }
+}
+
+extension FRDAmount: IAmount {
+    
+    /// Initializes amount with a `IAmount` protocol.
+    /// - Parameter amount: `IAmount` protocol to initialize the amount.
+    public init(_ amount: some IAmount) {
+        self.value = amount.value
+        self.subUnitValue = amount.subUnitValue
     }
 }

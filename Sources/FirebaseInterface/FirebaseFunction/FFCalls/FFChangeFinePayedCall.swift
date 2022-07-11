@@ -5,25 +5,29 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Changes payement state of fine with specified fine id.
-internal struct FFChangeFinePayedCall: FFCallable {
+public struct FFChangeFinePayedCall: FFCallable {
     
-    static let functionName: String = "changeFinePayed"
+    public static let functionName: String = "changeFinePayed"
     
     /// Id of the club to change the payed state.
-    private let clubId: UUID
+    public private(set) var clubId: Club.ID
     
     /// Id of fine of the payed state.
-    private let fineId: UUID
+    public private(set) var fineId: Fine.ID
     
     /// Payed state to change.
-    private let updatablePayedState: FFUpdatableParameter<FFPayedStateParameter>
+    public private(set) var payedState: FFPayedStateParameter
     
-    var parameters: FFParameters {
+    /// Update properties of associated fine.
+    public private(set) var fineUpdateProperties: FFUpdatableParameter<Any>.UpdateProperties
+    
+    public var parameters: FFParameters {
         FFParameter(self.clubId, for: "clubId")
         FFParameter(self.fineId, for: "fineId")
-        FFParameter(self.updatablePayedState, for: "updatablePayedState")
+        FFParameter(self.payedState, for: "payedState")
+        FFParameter(self.fineUpdateProperties, for: "fineUpdateProperties")
     }
 }

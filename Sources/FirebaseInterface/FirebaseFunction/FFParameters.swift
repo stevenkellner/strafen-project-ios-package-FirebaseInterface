@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import StrafenProjectTypes
 
 /// Contains parameters for a firebase function call.
-internal struct FFParameters {
+public struct FFParameters {
     
     /// Dictionary with key and associated parameter.
     public private(set) var parameters: [String: FFInternalParameterType]
@@ -22,6 +23,17 @@ internal struct FFParameters {
     /// - Parameter parameters: Parameters for a firebase function call.
     public init(_ parameters: [String: any FFParameterType]) {
         self.parameters = parameters.mapValues(\.internalParameter)
+    }
+    
+    /// Initializes function parameters with specified parameters.
+    /// - Parameter parameters: Parameters for a firebase function call.
+    public init(_ parameters: [String: FFInternalParameterType]) {
+        self.parameters = parameters
+    }
+    
+    /// Parameters valid for firebase function call.
+    public var functionParameters: [String: Any] {
+        return self.parameters.mapValues(\.functionParameters)
     }
     
     /// Appends parameter with specified key or updates parameter if key already exists.
@@ -66,40 +78,64 @@ internal struct FFParameters {
     }
 }
 
+extension FFParameters: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(self.parameters)
+    }
+}
+
 /// Contains a firebaes function parameter and the associated key.
-internal struct FFParameter<Parameter> where Parameter: FFParameterType {
+public struct FFParameter {
     
     /// Key of the function parameter.
     public let key: String
     
     /// Firebase function parameter
-    public let parameter: Parameter
+    public let parameter: FFInternalParameterType
     
     /// Constructs function parameter with associated key
     /// - Parameters:
     ///   - parameter: Firebase function parameter
     ///   - key: Key of the function parameter.
-    init(_ parameter: Parameter, for key: String) {
+    public init(_ parameter: FFInternalParameterType, for key: String) {
         self.parameter = parameter
+        self.key = key
+    }
+    
+    /// Constructs function parameter with associated key
+    /// - Parameters:
+    ///   - parameter: Firebase function parameter
+    ///   - key: Key of the function parameter.
+    public init<Parameter>(_ parameter: Parameter, for key: String) where Parameter: FFParameterType {
+        self.parameter = parameter.internalParameter
+        self.key = key
+    }
+    
+    public init(_ parameters: FFParameters, for key: String) {
+        self.parameter = .dictionary(parameters.parameters)
         self.key = key
     }
 }
 
 /// Builds firebase function parameters
 @resultBuilder
-internal struct FFParametersBuilder {
-    typealias Expression = FFParameter
-    typealias Component = [String: any FFParameterType]
+public struct FFParametersBuilder {
+    typealias Component = [String: FFInternalParameterType]
     typealias FinalResult = FFParameters
     
     static func buildFinalResult(_ component: Component) -> FinalResult {
         return FFParameters(component)
     }
     
-    static func buildExpression(_ expression: Expression<some FFParameterType>) -> Component {
+    static func buildExpression(_ expression: FFParameter) -> Component {
         return [expression.key: expression.parameter]
     }
-        
+    
+    static func buildExpression(_ expression: FFParameters) -> Component {
+        return expression.parameters
+    }
+    
     static func buildBlock(_ components: Component...) -> Component {
         return components.reduce(into: [:]) { partialResult, component in
             partialResult.merge(component) { _, value in value }
@@ -126,7 +162,7 @@ internal struct FFParametersBuilder {
 }
 
 /// Contains a valid value as parameter for a firebase function call.
-internal indirect enum FFInternalParameterType {
+public indirect enum FFInternalParameterType {
     
     /// Contains a `Bool` value.
     case bool(Bool)
@@ -155,8 +191,8 @@ internal indirect enum FFInternalParameterType {
     /// Contains a `Dictionary` value.
     case dictionary(Dictionary<String, FFInternalParameterType>)
     
-    /// Converts parameter to a firebase function parameter.
-    public var firebaseFunctionParameter: Any {
+    /// Parameter valid for firebase function call.
+    public var functionParameters: Any {
         switch self {
         case .bool(let value):
             return value
@@ -171,17 +207,43 @@ internal indirect enum FFInternalParameterType {
         case .string(let value):
             return value
         case .optional(let value):
-            return value.map(\.firebaseFunctionParameter) as Any
+            return value.map(\.functionParameters) as Any
         case .array(let value):
-            return value.map(\.firebaseFunctionParameter)
+            return value.map(\.functionParameters)
         case .dictionary(let value):
-            return value.mapValues(\.firebaseFunctionParameter)
+            return value.mapValues(\.functionParameters)
+        }
+    }
+}
+
+extension FFInternalParameterType: Encodable {
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .bool(let value):
+            try container.encode(value)
+        case .int(let value):
+            try container.encode(value)
+        case .uint(let value):
+            try container.encode(value)
+        case .double(let value):
+            try container.encode(value)
+        case .float(let value):
+            try container.encode(value)
+        case .string(let value):
+            try container.encode(value)
+        case .optional(let value):
+            try container.encode(value)
+        case .array(let value):
+            try container.encode(value)
+        case .dictionary(let value):
+            try container.encode(value)
         }
     }
 }
 
 /// Type that can be used as firebase function parameter.
-internal protocol FFParameterType<Parameter> {
+public protocol FFParameterType<Parameter> {
     
     /// Parameter for a function call.
     associatedtype Parameter: FFParameterType
@@ -194,64 +256,70 @@ internal protocol FFParameterType<Parameter> {
 }
 
 extension FFParameterType {
-    var internalParameter: FFInternalParameterType {
+    public var internalParameter: FFInternalParameterType {
         return self.parameter.internalParameter
     }
 }
 
 extension Bool: FFParameterType {
-    var internalParameter: FFInternalParameterType { .bool(self) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .bool(self) }
+    public var parameter: Self { self }
 }
 
 extension Int: FFParameterType {
-    var internalParameter: FFInternalParameterType { .int(self) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .int(self) }
+    public var parameter: Self { self }
 }
 
 extension UInt: FFParameterType {
-    var internalParameter: FFInternalParameterType { .uint(self) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .uint(self) }
+    public var parameter: Self { self }
 }
 
 extension Double: FFParameterType {
-    var internalParameter: FFInternalParameterType { .double(self) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .double(self) }
+    public var parameter: Self { self }
 }
 
 extension Float: FFParameterType {
-    var internalParameter: FFInternalParameterType { .float(self) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .float(self) }
+    public var parameter: Self { self }
 }
 
 extension String: FFParameterType {
-    var internalParameter: FFInternalParameterType { .string(self) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .string(self) }
+    public var parameter: Self { self }
 }
 
 extension Optional: FFParameterType where Wrapped: FFParameterType {
-    var internalParameter: FFInternalParameterType { .optional(self.map(\.internalParameter)) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .optional(self.map(\.internalParameter)) }
+    public var parameter: Self { self }
 }
 
 extension Array: FFParameterType where Element == any FFParameterType {
-    var internalParameter: FFInternalParameterType { .array(self.map(\.internalParameter)) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .array(self.map(\.internalParameter)) }
+    public var parameter: Self { self }
 }
 
 extension Dictionary: FFParameterType where Key == String, Value == any FFParameterType {
-    var internalParameter: FFInternalParameterType { .dictionary(self.mapValues(\.internalParameter)) }
-    var parameter: Self { self }
+    public var internalParameter: FFInternalParameterType { .dictionary(self.mapValues(\.internalParameter)) }
+    public var parameter: Self { self }
 }
 
 extension UUID: FFParameterType {
-    var parameter: String {
+    public var parameter: String {
         return self.uuidString
     }
 }
 
 extension Date: FFParameterType {
-    var parameter: String {
+    public var parameter: String {
         self.ISO8601Format(.iso8601)
+    }
+}
+
+extension Tagged: FFParameterType where RawValue: FFParameterType {
+    public var parameter: RawValue {
+        return self.rawValue
     }
 }

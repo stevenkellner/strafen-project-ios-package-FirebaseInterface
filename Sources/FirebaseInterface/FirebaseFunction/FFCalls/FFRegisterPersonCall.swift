@@ -5,22 +5,22 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Register person to club with given club id.
-internal struct FFRegisterPersonCall: FFCallable {
+public struct FFRegisterPersonCall: FFCallable {
     
-    typealias ResultType = FFClubPropertiesParameter
+    public typealias ReturnType = FFClubPropertiesParameter
     
-    static let functionName: String = "registerPerson"
+    public static let functionName: String = "registerPerson"
     
     /// Id of the club to change the person.
-    private let clubId: UUID
+    public private(set) var clubId: Club.ID
     
     /// Properties of person to register.
-    private let personProperties: FFPersonPropertiesWithUserIdParameter
+    public private(set) var personProperties: FFPersonPropertiesWithUserIdParameter
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.clubId, for: "clubId")
         FFParameter(self.personProperties, for: "personProperties")
     }

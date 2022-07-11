@@ -5,19 +5,19 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Get club id with given club identifier.
-internal struct FFGetClubIdCall: FFCallable {
+public struct FFGetClubIdCall: FFCallable {
     
-    typealias ResultType = String
+    public typealias ReturnType = Club.ID
     
-    static let functionName: String = "getClubId"
+    public static let functionName: String = "getClubId"
     
     /// Identifier of the club to get id from.
-    private let identifier: String
+    public private(set) var identifier: String
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.identifier, for: "identifier")
     }
 }

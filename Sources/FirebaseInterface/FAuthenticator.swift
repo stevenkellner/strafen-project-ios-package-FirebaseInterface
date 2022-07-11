@@ -8,7 +8,7 @@
 import FirebaseAuth
 
 /// Handles firebase authentications.
-internal struct FAuthenticator {
+public struct FAuthenticator {
     
     /// Shared instance for singelton
     public static let shared = Self()
@@ -29,5 +29,9 @@ internal struct FAuthenticator {
     /// Signs out current user.
     public func signOut() throws {
         try Auth.auth().signOut()
+    }
+    
+    public var user: User? {
+        return Auth.auth().currentUser
     }
 }

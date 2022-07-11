@@ -8,10 +8,10 @@
 import StrafenProjectTypes
 
 /// Reason template with id, reason message, amount and importance.
-internal struct FFReasonTemplateParameter {
+public struct FFReasonTemplateParameter {
     
     /// Id of the reason.
-    public private(set) var id: UUID
+    public private(set) var id: ReasonTemplate.ID
     
     /// Message of the reason.
     public private(set) var reasonMessage: String
@@ -24,7 +24,7 @@ internal struct FFReasonTemplateParameter {
 }
 
 extension FFReasonTemplateParameter: FFParameterType {
-    var parameter: [String: any FFParameterType] {
+    public var parameter: [String: any FFParameterType] {
         return [
             "id": self.id,
             "reasonMessage": self.reasonMessage,

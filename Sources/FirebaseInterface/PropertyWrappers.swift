@@ -8,7 +8,8 @@
 import Foundation
 
 /// Used to clamp a comparable value between lower and upper bound.
-@propertyWrapper struct Clamping<Value> where Value: Comparable {
+@propertyWrapper
+public struct Clamping<Value> where Value: Comparable {
     
     /// Clamped raw value.
     private var value: Value
@@ -20,12 +21,12 @@ import Foundation
     /// - Parameters:
     ///   - value: Value to clamp between range
     ///   - range: Range to clamp value between
-    init(wrappedValue value: Value, _ range: ClosedRange<Value>) {
+    public init(wrappedValue value: Value, _ range: ClosedRange<Value>) {
         self.value = range.clamp(value)
         self.range = range
     }
     
-    var wrappedValue: Value {
+    public var wrappedValue: Value {
         get { value }
         set { value = range.clamp(newValue) }
     }
@@ -36,7 +37,7 @@ extension ClosedRange {
     /// Clamps value between lower and upper bound
     /// - Parameter value: Clamped value between lower and upper bound
     /// - Returns: Clamped value.
-    func clamp(_ value: Bound) -> Bound {
+    public func clamp(_ value: Bound) -> Bound {
         Swift.min(Swift.max(value, lowerBound), upperBound)
     }
 }

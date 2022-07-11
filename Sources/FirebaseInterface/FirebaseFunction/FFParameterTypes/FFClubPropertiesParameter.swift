@@ -5,13 +5,13 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Contains all properties of a club.
-struct FFClubPropertiesParameter {
+public struct FFClubPropertiesParameter {
     
     /// Id of the club.
-    public private(set) var id: UUID
+    public private(set) var id: Club.ID
     
     /// Name of the club.
     public private(set) var name: String
@@ -27,7 +27,7 @@ struct FFClubPropertiesParameter {
 }
 
 extension FFClubPropertiesParameter: FFParameterType {
-    var parameter: [String: any FFParameterType] {
+    public var parameter: [String: any FFParameterType] {
         return [
             "id": self.id,
             "name": self.name,

@@ -5,26 +5,26 @@
 //  Created by Steven on 17.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 @testable import FirebaseInterface
 
-internal struct FFNewTestClubCall: FFCallable {    
-    enum TestClubType: String {
+public struct FFNewTestClubCall: FFCallable {
+    public enum TestClubType: String {
         case `default`
     }
     
-    static let functionName: String = "newTestClub"
-    public private(set) var clubId: UUID
+    public static let functionName: String = "newTestClub"
+    public private(set) var clubId: Club.ID
     public private(set) var testClubType: TestClubType
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.clubId, for: "clubId")
         FFParameter(self.testClubType, for: "testClubType")
     }
 }
 
 extension FFNewTestClubCall.TestClubType: FFParameterType {
-    var parameter: String {
+    public var parameter: String {
         return self.rawValue
     }
 }

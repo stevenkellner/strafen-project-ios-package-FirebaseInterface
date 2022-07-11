@@ -8,7 +8,7 @@
 import Foundation
 
 /// Types of a list item change.
-internal enum FFChangeTypeParameter: String {
+public enum FFChangeTypeParameter: String {
     
     /// Update or add a list item.
     case update
@@ -18,7 +18,7 @@ internal enum FFChangeTypeParameter: String {
 }
 
 extension FFChangeTypeParameter: FFParameterType {
-    var parameter: String {
+    public var parameter: String {
         return self.rawValue
     }
 }

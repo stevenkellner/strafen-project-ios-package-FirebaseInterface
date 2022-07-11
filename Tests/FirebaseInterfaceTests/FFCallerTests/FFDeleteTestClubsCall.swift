@@ -8,11 +8,11 @@
 import Foundation
 @testable import FirebaseInterface
 
-internal struct FFDeleteTestClubsCall: FFCallable {
+public struct FFDeleteTestClubsCall: FFCallable {
     
-    static let functionName: String = "deleteTestClubs"
+    public static let functionName: String = "deleteTestClubs"
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         return FFParameters()
     }
 }

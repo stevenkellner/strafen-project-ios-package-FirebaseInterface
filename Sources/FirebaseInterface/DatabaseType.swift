@@ -8,7 +8,7 @@
 import Foundation
 
 /// Type of the database for firebase function calls.
-internal enum DatabaseType: String {
+public enum DatabaseType: String {
     
     /// Changes content on the release database.
     case release
@@ -42,7 +42,7 @@ internal enum DatabaseType: String {
 }
 
 extension DatabaseType: FFParameterType {
-    var parameter: String {
+    public var parameter: String {
         return self.rawValue
     }
 }

@@ -5,23 +5,23 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Changes a element of fine list.
-internal struct FFChangeFineCall: FFCallable {
+public struct FFChangeFineCall: FFCallable {
     
-    static let functionName: String = "changeFine"
+    public static let functionName: String = "changeFine"
     
     /// Id of the club to change the fine.
-    private let clubId: UUID
+    public private(set) var clubId: Club.ID
     
     /// Types of a list item change.
-    private let changeType: FFChangeTypeParameter
+    public private(set) var changeType: FFChangeTypeParameter
     
     /// Fine to change.
-    private let updatableFine: FFUpdatableParameter<FFDeletableParameter<FFFineParameter, UUID>>
+    public private(set) var updatableFine: FFUpdatableParameter<FFDeletableParameter<FFFineParameter, Fine.ID>>
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.clubId, for: "clubId")
         FFParameter(self.changeType, for: "changeType")
         FFParameter(self.updatableFine, for: "updatableFine")

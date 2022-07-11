@@ -8,7 +8,7 @@
 import StrafenProjectTypes
 
 /// Importance of a fine.
-internal enum FFImportanceParameter: String {
+public enum FFImportanceParameter: String {
     
     /// Fine has high importance.
     case high
@@ -21,7 +21,7 @@ internal enum FFImportanceParameter: String {
 }
 
 extension FFImportanceParameter: FFParameterType {
-    var parameter: String {
+    public var parameter: String {
         return self.rawValue
     }
 }
@@ -38,6 +38,14 @@ extension FFImportanceParameter: IImportance {
         case .high: self = .high
         case .medium: self = .medium
         case .low: self = .low
+        }
+    }
+    
+    public var concreteImportance: Importance {
+        switch self {
+        case .high: return .high
+        case .medium: return .medium
+        case .low: return .low
         }
     }
 }

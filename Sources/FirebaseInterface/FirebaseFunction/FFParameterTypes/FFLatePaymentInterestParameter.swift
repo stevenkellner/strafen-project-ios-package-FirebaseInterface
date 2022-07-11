@@ -5,33 +5,10 @@
 //  Created by Steven on 12.06.22.
 //
 
-import Foundation
+import StrafenProjectTypes
 
 /// Late payement interest
-internal struct FFLatePaymentInterestParameter {
-    
-    /// Contains a value and an unit (`day`, `month`, `year`).
-    internal struct TimePeriod {
-        
-        /// Unit of a time period.
-        internal enum Unit: String {
-            
-            /// Day unit of a time period.
-            case day
-            
-            /// Month unit of a time period.
-            case month
-            
-            /// Year unit of a time period.
-            case year
-        }
-        
-        /// Value of the time period.
-        public private(set) var value: Int
-        
-        /// Unit of the time period.
-        public private(set) var unit: Unit
-    }
+public struct FFLatePaymentInterestParameter {
     
     /// Interestfree period of the late payment interest.
     public private(set) var interestFreePeriod: TimePeriod
@@ -46,27 +23,8 @@ internal struct FFLatePaymentInterestParameter {
     public private(set) var compoundInterest: Bool
 }
 
-extension FFLatePaymentInterestParameter.TimePeriod.Unit: FFParameterType {
-    var parameter: String {
-        return self.rawValue
-    }
-}
-
-extension FFLatePaymentInterestParameter.TimePeriod.Unit: Decodable {}
-
-extension FFLatePaymentInterestParameter.TimePeriod: FFParameterType {
-    var parameter: [String: any FFParameterType] {
-        return [
-            "value": self.value,
-            "unit": self.unit
-        ]
-    }
-}
-
-extension FFLatePaymentInterestParameter.TimePeriod: Decodable {}
-
 extension FFLatePaymentInterestParameter: FFParameterType {
-    var parameter: [String: any FFParameterType] {
+    public var parameter: [String: any FFParameterType] {
         return [
             "interestFreePeriod": self.interestFreePeriod,
             "interestPeriod": self.interestPeriod,
@@ -77,3 +35,94 @@ extension FFLatePaymentInterestParameter: FFParameterType {
 }
 
 extension FFLatePaymentInterestParameter: Decodable {}
+
+extension FFLatePaymentInterestParameter: ILatePaymentInterest {
+
+    /// Initializes late payment interest with a `ILatePaymentInterest` protocol.
+    /// - Parameter latePaymentInterest: `ILatePaymentInterest` protocol to initialize the late payment interest.
+    public init(_ latePaymentInterest: some ILatePaymentInterest) {
+        self.interestFreePeriod = TimePeriod(latePaymentInterest.interestFreePeriod)
+        self.interestPeriod = TimePeriod(latePaymentInterest.interestPeriod)
+        self.interestRate = latePaymentInterest.interestRate
+        self.compoundInterest = latePaymentInterest.compoundInterest
+    }
+}
+
+extension FFLatePaymentInterestParameter {
+
+    /// Contains a value and an unit of `day`, `month`, `year`.
+    public struct TimePeriod {
+
+        /// Value of the time period.
+        public private(set) var value: UInt
+
+        /// Unit of the time period.
+        public private(set) var unit: Unit
+    }
+}
+
+extension FFLatePaymentInterestParameter.TimePeriod: FFParameterType {
+    public var parameter: [String: any FFParameterType] {
+        return [
+            "value": self.value,
+            "unit": self.unit
+        ]
+    }
+}
+
+extension FFLatePaymentInterestParameter.TimePeriod: Decodable {}
+
+extension FFLatePaymentInterestParameter.TimePeriod: ITimePeriod {
+
+    /// Initializes time period with a `ITimePeriod` protocol.
+    /// - Parameter timePeriod: `ITimePeriod` protocol to initialize the time period.
+    public init(_ timePeriod: some ITimePeriod) {
+        self.value = timePeriod.value
+        self.unit = Unit(timePeriod.unit)
+    }
+}
+
+extension FFLatePaymentInterestParameter.TimePeriod {
+
+    /// Unit of a time period.
+    public enum Unit: String {
+
+        /// Day unit of a time period.
+        case day
+
+        /// Month unit of a time period.
+        case month
+
+        /// Year unit of a time period.
+        case year
+    }
+}
+
+extension FFLatePaymentInterestParameter.TimePeriod.Unit: FFParameterType {
+    public var parameter: String {
+        return self.rawValue
+    }
+}
+
+extension FFLatePaymentInterestParameter.TimePeriod.Unit: Decodable {}
+
+extension FFLatePaymentInterestParameter.TimePeriod.Unit: ITimePeriodUnit {
+
+    /// Initializes time period unit with a `ITimePeriodUnit` protocol.
+    /// - Parameter timePeriodUnit: `ITimePeriodUnit` protocol to initialize the time period unit.
+    public init(_ timePeriodUnit: some ITimePeriodUnit) {
+        switch timePeriodUnit.concreteTimePeriodUnit {
+        case .day: self = .day
+        case .month: self = .month
+        case .year: self = .year
+        }
+    }
+
+    public var concreteTimePeriodUnit: TimePeriodUnit {
+        switch self {
+        case .day: return .day
+        case .month: return .month
+        case .year: return .year
+        }
+    }
+}

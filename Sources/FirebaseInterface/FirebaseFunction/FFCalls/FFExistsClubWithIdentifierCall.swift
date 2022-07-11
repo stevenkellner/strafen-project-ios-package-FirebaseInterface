@@ -8,16 +8,16 @@
 import Foundation
 
 /// Checks if club with given identifier already exists.
-internal struct FFExistsClubWithIdentifierCall: FFCallable {
+public struct FFExistsClubWithIdentifierCall: FFCallable {
+
+    public typealias ReturnType = Bool
     
-    typealias ResultType = String
-    
-    static let functionName: String = "existsClubWithIdentifier"
+    public static let functionName: String = "existsClubWithIdentifier"
     
     /// Identifier of the club to check existence.
-    private let identifier: String
+    public private(set) var identifier: String
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.identifier, for: "identifier")
     }
 }

@@ -21,6 +21,56 @@
                BlueprintName = "FirebaseInterfaceTests"
                ReferencedContainer = "container:">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AmountTests">
+               </Test>
+               <Test
+                  Identifier = "ChangeTypeTests">
+               </Test>
+               <Test
+                  Identifier = "ClubPropertiesTests">
+               </Test>
+               <Test
+                  Identifier = "DatabaseTypeTests">
+               </Test>
+               <Test
+                  Identifier = "DeletableTests">
+               </Test>
+               <Test
+                  Identifier = "FineReasonTests">
+               </Test>
+               <Test
+                  Identifier = "FineTests">
+               </Test>
+               <Test
+                  Identifier = "ImportanceTests">
+               </Test>
+               <Test
+                  Identifier = "LatePaymentInterestTests">
+               </Test>
+               <Test
+                  Identifier = "PayedStateTests">
+               </Test>
+               <Test
+                  Identifier = "PersonNameTests">
+               </Test>
+               <Test
+                  Identifier = "PersonPropertiesWithIsAdminTests">
+               </Test>
+               <Test
+                  Identifier = "PersonPropertiesWithUserIdTests">
+               </Test>
+               <Test
+                  Identifier = "PersonTests">
+               </Test>
+               <Test
+                  Identifier = "ReasonTemplateTests">
+               </Test>
+               <Test
+                  Identifier = "UpdatableTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>

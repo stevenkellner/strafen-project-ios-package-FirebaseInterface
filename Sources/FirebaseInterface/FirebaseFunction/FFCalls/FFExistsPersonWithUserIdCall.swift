@@ -8,16 +8,16 @@
 import Foundation
 
 /// Checks if a person with given user id exists.
-internal struct FFExistsPersonWithUserIdCall: FFCallable {
+public struct FFExistsPersonWithUserIdCall: FFCallable {
     
-    typealias ResultType = String
+    public typealias ReturnType = Bool
     
-    static let functionName: String = "existsPersonWithUserId"
+    public static let functionName: String = "existsPersonWithUserId"
     
     /// User id of person to check if exitsts.
-    private let userId: String
+    public private(set) var userId: String
     
-    var parameters: FFParameters {
+    public var parameters: FFParameters {
         FFParameter(self.userId, for: "userId")
     }
 }
